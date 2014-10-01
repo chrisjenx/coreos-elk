@@ -1,4 +1,8 @@
-# CoreOS blog post code - part 2
+# CoreOS ELK
 
-This is the source code belonging to [this blog post](http://marceldegraaf.net/2014/05/05/coreos-follow-up-sinatra-logstash-elasticsearch-kibana.html)
-on log aggregation with CoreOS, Sinatra, Logstash, and Elasticsearch.
+
+Building elasticsearch docker image:
+```bash
+docker build -t chrisjenx/elasticsearch ./elasticsearch/
+docker push chrisjenx/elasticsearch
+```
