@@ -1,4 +1,8 @@
 input {
+  tcp {
+    port => 10102
+    type => "mobile"
+  }
   lumberjack {
     port => 10101
     ssl_certificate => "/opt/logstash/ssl/logstash-forwarder.crt"
@@ -12,4 +16,5 @@ output {
     host => "{{ .services_elasticsearch_host }}"
     port => 9200
   }
+  stdout { codec => json }
 }

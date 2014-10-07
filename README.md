@@ -1,7 +1,7 @@
 # CoreOS ELK
 
 
-Building elasticsearch docker image:
+Building elasticsearch docker image and starting it in fleet:
 ```bash
 # Build task
 docker build -t chrisjenx/elasticsearch ./elasticsearch/
@@ -10,11 +10,11 @@ docker push chrisjenx/elasticsearch
 cd elasticsearch && fleetctl start elasticsearch@1.service
 ```
 
-Building logstash docker image:
+Building logstash docker image and starting it in fleet:
 ```bash
 # Build task
-docker build -t chrisjenx/elasticsearch ./elasticsearch/
-docker push chrisjenx/elasticsearch
+docker build -t chrisjenx/logstash ./logstash/
+docker push chrisjenx/logstash
 # Run on the cluster
-cd elasticsearch && fleetctl start elasticsearch@1.service
+cd logstash && fleetctl start logstash.service
 ```

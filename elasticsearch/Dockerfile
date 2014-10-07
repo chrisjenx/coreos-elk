@@ -21,6 +21,9 @@ RUN \
 RUN /opt/elasticsearch/bin/plugin -install lmenezes/elasticsearch-kopf
 RUN /opt/elasticsearch/bin/plugin -url http://download.elasticsearch.org/kibana/kibana/kibana-latest.zip -install elasticsearch/kibana3
 
+# Add files
+ADD ./bin/boot.sh             /boot.sh
+
 # Expose ports.
 #   - 9200: HTTP
 #   - 9300: transport
@@ -28,4 +31,6 @@ EXPOSE 9200
 EXPOSE 9300
 
 # Start Elasticsearch
-CMD /opt/elasticsearch/bin/elasticsearch
+# Start the container
+RUN chmod +x /boot.sh
+CMD /boot.sh

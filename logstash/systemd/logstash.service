@@ -12,6 +12,7 @@ ExecStart=/usr/bin/docker run --rm \
   --name %p \
   -e HOST_IP=${COREOS_PUBLIC_IPV4} \
   -p 10101:10101 \
+  -p 10102:10102 \
   chrisjenx/logstash
 ExecStartPost=/usr/bin/etcdctl set /services/logstash/host ${COREOS_PUBLIC_IPV4}
 ExecStop=/usr/bin/docker kill %p
