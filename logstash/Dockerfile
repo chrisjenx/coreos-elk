@@ -1,12 +1,21 @@
-FROM stackbrew/ubuntu:saucy
-MAINTAINER Marcel de Graaf <mail@marceldegraaf.net>
+#
+# Logstash Dockerfile
+#
+# https://github.com/chrisjenx/coreos-elk/logstash
+#
 
-# Install Java
-RUN apt-get install -y --force-yes openjdk-7-jre-headless curl
+# Pull base image.
+FROM dockerfile/java:oracle-java7
+
+MAINTAINER Chris Jenkins <chris.mark.jenkins@gmail.com>
+
+# Vars
+ENV CONFD_VERSION 0.5.0
+ENV LOGSTASH_VERSION 1.4.2
 
 # Install confd
-RUN curl -L https://github.com/kelseyhightower/confd/releases/download/v0.3.0/confd_0.3.0_linux_amd64.tar.gz | tar xz
-RUN mv confd /usr/local/bin/confd
+RUN curl -L https://github.com/kelseyhightower/confd/releases/download/v$CONFD_VERSION/confd-$CONFD_VERSION-linux-amd64 -o /usr/local/bin/confd
+RUN chmod 0755 /usr/local/bin/confd
 
 # Create directories
 RUN mkdir -p /opt/logstash/ssl
@@ -14,12 +23,20 @@ RUN mkdir -p /etc/confd/conf.d
 RUN mkdir -p /etc/confd/templates
 
 # Install Logstash
-RUN curl https://download.elasticsearch.org/logstash/logstash/logstash-1.4.0.tar.gz -o /tmp/logstash-1.4.0.tar.gz
-RUn tar xfz /tmp/logstash-1.4.0.tar.gz -C /opt/logstash --strip-components=1
+RUN curl https://download.elasticsearch.org/logstash/logstash/logstash-$LOGSTASH_VERSION.tar.gz \
+  -o /tmp/logstash-$LOGSTASH_VERSION.tar.gz
+RUN tar -xzvf /tmp/logstash-$LOGSTASH_VERSION.tar.gz -C /opt/logstash --strip-components=1
+RUN rm /tmp/logstash-$LOGSTASH_VERSION.tar.gz
+
+# Install contrib plugins
+RUN /opt/logstash/bin/plugin install contrib
 
 # Add files
 ADD ./confd                   /etc/confd
 ADD ./bin/boot.sh             /boot.sh
+
+# Kibana
+EXPOSE 9292
 
 # Start the container
 RUN chmod +x /boot.sh

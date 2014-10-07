@@ -14,13 +14,13 @@ ExecStartPre=/usr/bin/docker pull chrisjenx/elasticsearch
 
 ExecStart=/usr/bin/docker run --rm \
   --name %p-%i \
-  -p 9200:9200 \
-  -p 9300:9300 \
+  -p 920%i:9200 \
+  -p 930%i:9300 \
   -e HOST_IP=${COREOS_PUBLIC_IPV4} \
   chrisjenx/elasticsearch
-ExecStartPost=/usr/bin/etcdctl set /services/elasticsearch/${COREOS_PUBLIC_IPV4} %p-%i
-ExecStop=/usr/bin/docker kill %p-%i
-ExecStopPost=/usr/bin/etcdctl rm /service/elasticsearch/${COREOS_PUBLIC_IPV4}
+ExecStartPost=/usr/bin/etcdctl set /services/elasticsearch/host ${COREOS_PUBLIC_IPV4}
+ExecStop=-/usr/bin/docker kill %p-%i
+ExecStopPost=/usr/bin/etcdctl rm /services/elasticsearch/host
 
 [X-Fleet]
 X-Conflicts=%p@*.service

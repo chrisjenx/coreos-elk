@@ -1,5 +1,5 @@
 [template]
-keys        = [ "elasticsearch/host" ]
+keys        = [ "services/elasticsearch/host" ]
 owner       = "logstash"
 mode        = "0644"
 src         = "logstash.conf.tmpl"

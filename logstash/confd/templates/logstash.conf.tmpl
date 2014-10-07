@@ -9,7 +9,7 @@ input {
 output {
   elasticsearch {
     protocol => "http"
-    host => "{{ .elasticsearch_host }}"
+    host => "{{ .services_elasticsearch_host }}"
     port => 9200
   }
 }
