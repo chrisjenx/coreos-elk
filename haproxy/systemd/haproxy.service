@@ -1,0 +1,23 @@
+[Unit]
+Description=elasticsearch
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutSec=0
+
+EnvironmentFile=/etc/environment
+
+ExecStartPre=-/usr/bin/docker kill %p
+ExecStartPre=-/usr/bin/docker rm %p
+ExecStartPre=/usr/bin/docker pull chrisjenx/haproxy
+
+ExecStart=/usr/bin/docker run --rm \
+  --name %p \
+  -e PUBLIC_IPV4=${COREOS_PUBLIC_IPV4} \
+  -e PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} \
+  chrisjenx/haproxy
+ExecStop=-/usr/bin/docker kill %p
+
+[X-Fleet]
+X-Global=true

@@ -1,0 +1,15 @@
+defaults
+  log     global
+  mode    http
+
+
+listen frontend 0.0.0.0:9199
+  mode http
+  stats enable
+  stats uri /haproxy?stats
+  balance roundrobin
+  option httpclose
+  option forwardfor
+  {{range $server := .services_elasticsearch}}
+  server {{Base $server.Key}} {{$server.Value}}:9200 check
+  {{end}}
