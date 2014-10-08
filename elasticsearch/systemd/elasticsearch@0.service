@@ -20,9 +20,9 @@ ExecStart=/usr/bin/docker run --rm \
   -e PUBLIC_IPV4=${COREOS_PUBLIC_IPV4} \
   -e PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} \
   chrisjenx/elasticsearch
-ExecStartPost=/usr/bin/etcdctl set /services/elasticsearch/%i ${COREOS_PRIVATE_IPV4}
+ExecStartPost=/usr/bin/etcdctl set /services/elasticsearch/%p-%i ${COREOS_PRIVATE_IPV4}
 ExecStop=-/usr/bin/docker kill %p-%i
-ExecStopPost=/usr/bin/etcdctl rm /services/elasticsearch/%i
+ExecStopPost=/usr/bin/etcdctl rm /services/elasticsearch/%p-%i
 
 [X-Fleet]
 X-Conflicts=%p@*.service

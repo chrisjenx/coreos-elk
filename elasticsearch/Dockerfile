@@ -53,6 +53,5 @@ EXPOSE 9200
 EXPOSE 9300
 
 # Start Elasticsearch
-# Start the container
 RUN chmod +x /boot.sh
 CMD /boot.sh

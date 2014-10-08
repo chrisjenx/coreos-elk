@@ -12,6 +12,8 @@ MAINTAINER Chris Jenkins <chris.mark.jenkins@gmail.com>
 # Vars
 ENV CONFD_VERSION 0.5.0
 ENV LOGSTASH_VERSION 1.4.2
+ENV PRIVATE_IPV4 0.0.0.0
+ENV PUBLIC_IPV4 0.0.0.0
 
 # Install confd
 RUN curl -L https://github.com/kelseyhightower/confd/releases/download/v$CONFD_VERSION/confd-$CONFD_VERSION-linux-amd64 -o /usr/local/bin/confd

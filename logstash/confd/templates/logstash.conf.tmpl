@@ -12,9 +12,10 @@ input {
 
 output {
   elasticsearch {
+    cluster => "logstash"
+    host => "0.0.0.0"
     protocol => "http"
-    host => "{{ .services_elasticsearch_host }}"
-    port => 9200
+    port => 9199
   }
   stdout { codec => json }
 }
