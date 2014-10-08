@@ -1,0 +1,28 @@
+[Unit]
+Description=elasticsearch
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutSec=0
+
+EnvironmentFile=/etc/environment
+
+ExecStartPre=-/usr/bin/docker kill %p-%i
+ExecStartPre=-/usr/bin/docker rm %p-%i
+ExecStartPre=/usr/bin/docker pull chrisjenx/elasticsearch
+
+ExecStart=/usr/bin/docker run --rm \
+  --name %p-%i \
+  -p 9200:9200 \
+  -p 9300:9300 \
+  --volume /data/elasticsearch:/data \
+  -e PUBLIC_IPV4=${COREOS_PUBLIC_IPV4} \
+  -e PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} \
+  chrisjenx/elasticsearch
+ExecStartPost=/usr/bin/etcdctl set /services/elasticsearch/%i ${COREOS_PRIVATE_IPV4}
+ExecStop=-/usr/bin/docker kill %p-%i
+ExecStopPost=/usr/bin/etcdctl rm /services/elasticsearch/%i
+
+[X-Fleet]
+X-Conflicts=%p@*.service

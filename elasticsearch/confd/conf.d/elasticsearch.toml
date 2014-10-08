@@ -1,0 +1,8 @@
+[template]
+keys        = [
+  "services/elasticsearch"
+]
+owner       = "elasticsearch"
+mode        = "0644"
+src         = "elasticsearch.yml.tmpl"
+dest        = "/opt/elasticsearch/config/elasticsearch.yml"

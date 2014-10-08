@@ -1,0 +1,61 @@
+# For information on supported formats and syntax for the config file, see
+# <http://elasticsearch.org/guide/en/elasticsearch/reference/current/setup-configuration.html>
+
+
+################################### Cluster ###################################
+
+# Cluster name identifies your cluster for auto-discovery.
+cluster.name: logstash
+
+#################################### Node #####################################
+# Auto Generate Node Names
+#node.name: "Franz Kafka"
+
+#
+# Allow this node to be eligible as a master node (enabled by default):
+#
+node.master: true
+
+#
+# Allow this node to store data (enabled by default):
+#
+node.data: true
+
+# Use the Cluster Health API [http://${PUBLIC_IPV4}:9200/_cluster/health], the
+# Node Info API [http://${PUBLIC_IPV4}:9200/_nodes]
+
+#################################### Paths ####################################
+
+path.conf: /opt/elasticsearch/config
+path.data: /data/data
+path.logs: /data/log
+
+############################## Network And HTTP ###############################
+
+# Elasticsearch, by default, binds itself to the 0.0.0.0 address, and listens
+# on port [9200-9300] for HTTP traffic and on port [9300-9400] for node-to-node
+# communication. (the range means that if the port is busy, it will automatically
+# try the next port).
+
+# Set the address other nodes will use to communicate with this node. If not
+# set, it is automatically derived. It must point to an actual IP address.
+network.publish_host: ${PRIVATE_IPV4}
+
+transport.tcp.port: 9300
+http.port: 9200
+
+################################## Discovery ##################################
+
+# Default is 3, set slightly higher incase one instance is under heavy load
+discovery.zen.ping.timeout: 5s
+
+# See <http://elasticsearch.org/guide/en/elasticsearch/reference/current/modules-discovery-zen.html>
+# We can't use multicast inside docker, as the containers are bridged.
+discovery.zen.ping.multicast.enabled: false
+
+# This this changes as we add/remove boxes onto the cluster. The intial box will
+# be empty at this stage but that is fine. It becomes the master by default.
+# Once one box talks to another they negotiate based on the cluster settings.
+#
+#discovery.zen.ping.unicast.hosts: ["host1", "host2:port"]
+discovery.zen.ping.unicast.hosts: [{{range $i, $server := .services_elasticsearch }}{{if $i}}, {{end}}"{{ $server.Value }}"{{end}}]
