@@ -9,6 +9,18 @@ FROM dockerfile/java:oracle-java7
 
 MAINTAINER Christopher Jenkins <chris.mark.jenkins@gmail.com>
 
+# Vars
+ENV CONFD_VERSION 0.5.0
+
+# Install confd
+RUN curl -L https://github.com/kelseyhightower/confd/releases/download/v$CONFD_VERSION/confd-$CONFD_VERSION-linux-amd64 -o /usr/local/bin/confd \
+  && chmod 0755 /usr/local/bin/confd
+
+# Create directories
+RUN mkdir -p /opt/logstash/ssl
+RUN mkdir -p /etc/confd/conf.d
+RUN mkdir -p /etc/confd/templates
+
 # Install ElasticSearch.
 RUN \
   cd /tmp && \
@@ -22,6 +34,7 @@ RUN /opt/elasticsearch/bin/plugin -install lmenezes/elasticsearch-kopf
 RUN /opt/elasticsearch/bin/plugin -url http://download.elasticsearch.org/kibana/kibana/kibana-latest.zip -install elasticsearch/kibana3
 
 # Add files
+ADD ./confd                   /etc/confd
 ADD ./bin/boot.sh             /boot.sh
 
 # Expose ports.
