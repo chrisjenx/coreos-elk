@@ -11,6 +11,9 @@ MAINTAINER Christopher Jenkins <chris.mark.jenkins@gmail.com>
 
 # Vars
 ENV CONFD_VERSION 0.5.0
+# These should be set when running the container
+ENV PRIVATE_IPV4 localhost
+ENV PUBLIC_IPV4 localhost
 
 # Install confd
 RUN curl -L https://github.com/kelseyhightower/confd/releases/download/v$CONFD_VERSION/confd-$CONFD_VERSION-linux-amd64 -o /usr/local/bin/confd \
@@ -33,11 +36,17 @@ RUN \
 RUN /opt/elasticsearch/bin/plugin -install lmenezes/elasticsearch-kopf
 RUN /opt/elasticsearch/bin/plugin -url http://download.elasticsearch.org/kibana/kibana/kibana-latest.zip -install elasticsearch/kibana3
 
+# Define mountable directories.
+VOLUME ["/data"]
+
 # Add files
 ADD ./confd                   /etc/confd
 ADD ./bin/boot.sh             /boot.sh
 
-# Expose ports.
+# Define working directory.
+WORKDIR /data
+
+# Expose ports before starting to alow unicast to find other hosts
 #   - 9200: HTTP
 #   - 9300: transport
 EXPOSE 9200

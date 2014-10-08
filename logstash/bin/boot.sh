@@ -10,7 +10,7 @@ export ETCD=$HOST_IP:$ETCD_PORT
 echo "[logstash] booting container. ETCD: $ETCD"
 
 # Loop until confd has updated the logstash config
-until confd -onetime -node $ETCD -config-file /etc/confd/conf.d/logstash.toml; do
+until confd -verbose -onetime -node $ETCD -config-file /etc/confd/conf.d/logstash.toml; do
   echo "[logstash] waiting for confd to refresh logstash.conf (waiting for ElasticSearch to be available)"
   sleep 5
 done

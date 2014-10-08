@@ -7,7 +7,7 @@ Building elasticsearch docker image and starting it in fleet:
 docker build -t chrisjenx/elasticsearch ./elasticsearch/
 docker push chrisjenx/elasticsearch
 # Run on the cluster
-cd elasticsearch && fleetctl start elasticsearch@1.service
+cd elasticsearch && fleetctl start elasticsearch@0.service
 ```
 
 Building logstash docker image and starting it in fleet:
