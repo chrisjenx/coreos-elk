@@ -17,10 +17,14 @@ until confd -verbose -onetime -node $ETCD -confdir /etc/confd; do
   sleep 5
 done
 
+echo "[haproxy] generated haproxy.conf"
+cat /etc/haproxy/haproxy.cfg
+
 # Run confd in the background to watch the upstream servers
 confd -verbose -interval 10 -node $ETCD -confdir /etc/confd &
 echo "[haproxy] confd is listening for changes on etcd..."
 
 # Start nginx
 echo "[haproxy] starting haproxy service..."
-/usr/sbin/service haproxy start
+cd /etc/haproxy
+haproxy -f /etc/haproxy/haproxy.cfg

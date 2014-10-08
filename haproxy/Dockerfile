@@ -39,9 +39,10 @@ EXPOSE 443
 #Logstash
 # - http
 # - transport
+EXPOSE 9199
 EXPOSE 9200
 EXPOSE 9300
 
 # Start Elasticsearch
 RUN chmod +x /boot.sh
-CMD ["bash", "/boot.sh"]
+CMD /boot.sh
