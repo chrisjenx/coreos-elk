@@ -3,34 +3,33 @@
 #
 # https://github.com/dockerfile/haproxy
 #
+FROM ubuntu:trusty
+MAINTAINER Chris Jenkins <chris.mark.jenkins@gmail.com>
 
-# Pull base image.
-FROM dockerfile/ubuntu
 
-# Env
-# These should be set when running the container
+# Env - These should be set when running the container
+ENV DEBIAN_FRONTEND noninteractive
 ENV PRIVATE_IPV4 0.0.0.0
 ENV PUBLIC_IPV4 0.0.0.0
+ENV CONFD_VERSION 0.5.0
+
+# Install Haproxy.
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 505d97a41c61b9cd
+RUN echo "deb http://ppa.launchpad.net/vbernat/haproxy-1.5/ubuntu trusty main" > /etc/apt/sources.list.d/haproxy.list
+RUN apt-get update -q
+RUN apt-get install -y -q haproxy curl
 
 # Install confd
-ENV CONFD_VERSION 0.5.0
 RUN curl -L https://github.com/kelseyhightower/confd/releases/download/v$CONFD_VERSION/confd-$CONFD_VERSION-linux-amd64 -o /usr/local/bin/confd \
   && chmod 0755 /usr/local/bin/confd
 
-# Make dirs for confd
-RUN mkdir -p /etc/confd/conf.d
-RUN mkdir -p /etc/confd/templates
 # Add files
 ADD ./confd           /etc/confd
-ADD ./bin/boot.sh     /boot.sh
+ADD ./bin/boot.sh     /usr/local/bin/start_haproxy
 
-# Install Haproxy.
-RUN \
-  sed -i 's/^# \(.*-backports\s\)/\1/g' /etc/apt/sources.list && \
-  apt-get update && \
-  apt-get install -y haproxy=1.5.3-1~ubuntu14.04.1 && \
-  sed -i 's/^ENABLED=.*/ENABLED=1/' /etc/default/haproxy && \
-  rm -rf /var/lib/apt/lists/*
+# Allow confd to be exec
+RUN chmod +x /usr/local/bin/confd
+RUN chmod +x /usr/local/bin/start_haproxy
 
 # Expose ports.
 EXPOSE 80
@@ -40,9 +39,7 @@ EXPOSE 443
 # - http
 # - transport
 EXPOSE 9199
-EXPOSE 9200
-EXPOSE 9300
+# EXPOSE 9200
+# EXPOSE 9300
 
-# Start Elasticsearch
-RUN chmod +x /boot.sh
-CMD /boot.sh
+CMD start_haproxy

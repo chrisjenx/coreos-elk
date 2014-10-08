@@ -2,10 +2,17 @@
 Description=nginx
 
 [Service]
+TimeoutSec=0
 EnvironmentFile=/etc/environment
-ExecStartPre=/usr/bin/docker pull marceldegraaf/nginx
-ExecStart=/usr/bin/docker run --rm --name nginx -p 80:80 -e HOST_IP=${COREOS_PUBLIC_IPV4} marceldegraaf/nginx
-ExecStop=/usr/bin/docker kill nginx
+ExecStartPre=-/usr/bin/docker rm nginx
+ExecStartPre=/usr/bin/docker pull chrisjenx/nginx
+ExecStart=/usr/bin/docker run --rm \
+  --name nginx \
+  -p 80:80 \
+  -e PUBLIC_IPV4=${COREOS_PUBLIC_IPV4} \
+  -e PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} \
+  chrisjenx/nginx
+ExecStop=-/usr/bin/docker kill nginx
 
 [X-Fleet]
 X-Conflicts=nginx.service

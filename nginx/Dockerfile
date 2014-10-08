@@ -1,19 +1,25 @@
-FROM stackbrew/ubuntu:saucy
-MAINTAINER Marcel de Graaf <mail@marceldegraaf.net>
+# Pull base image.
+FROM dockerfile/ubuntu
+MAINTAINER Christopher Jenkins <chris.mark.jenkins@gmail.com>
+
+ENV PRIVATE_IPV4 0.0.0.0
+ENV PUBLIC_IPV4 0.0.0.0
+
 
 # Install Nginx
-RUN apt-get install -y --force-yes software-properties-common
-RUN add-apt-repository ppa:nginx/stable
-RUN apt-get update
-RUN apt-get install -y --force-yes nginx curl
+# Install Nginx.
+RUN \
+  add-apt-repository -y ppa:nginx/stable && \
+  apt-get update && \
+  apt-get install -y nginx && \
+  rm -rf /var/lib/apt/lists/* && \
+  echo "\ndaemon off;" >> /etc/nginx/nginx.conf && \
+  chown -R www-data:www-data /var/lib/nginx
 
 # Install confd
-RUN curl -L https://github.com/kelseyhightower/confd/releases/download/v0.3.0/confd_0.3.0_linux_amd64.tar.gz | tar xz
-RUN mv confd /usr/local/bin/confd
-
-# Create directories
-RUN mkdir -p /etc/confd/conf.d
-RUN mkdir -p /etc/confd/templates
+ENV CONFD_VERSION 0.5.0
+RUN curl -L https://github.com/kelseyhightower/confd/releases/download/v$CONFD_VERSION/confd-$CONFD_VERSION-linux-amd64 -o /usr/local/bin/confd \
+  && chmod 0755 /usr/local/bin/confd
 
 # Add confd files
 ADD ./confd /etc/confd/
@@ -24,6 +30,13 @@ RUN rm -f /etc/nginx/sites-enabled/default
 # Add boot script
 ADD ./bin/boot.sh /boot.sh
 RUN chmod +x /boot.sh
+
+# Expose ports.
+EXPOSE 80
+EXPOSE 8080
+EXPOSE 443
+EXPOSE 9200
+EXPOSE 9300
 
 # Run the boot script
 CMD /boot.sh

@@ -1,9 +1,10 @@
 [template]
-owner       = "haproxy"
+owner       = "root"
 mode        = "0644"
 src         ="haproxy.cfg.tmpl"
 dest        ="/etc/haproxy/haproxy.cfg"
-reload_cmd  ="/usr/sbin/service haproxy reload"
+check_cmd  = "/usr/sbin/haproxy -f {{ .src }} -c"
+reload_cmd = "/bin/bash -c 'eval \"haproxy -f /etc/haproxy/haproxy.cfg -db -sf $(< /var/run/haproxy.pid) &\"; echo $! > /var/run/haproxy.pid'"
 keys = [
   "/services/elasticsearch",
 ]

@@ -3,14 +3,17 @@
 # Fail hard and fast
 set -eo pipefail
 
+export PUBLIC_IPV4=${PUBLIC_IPV4}
+export PRIVATE_IPV4=${PRIVATE_IPV4}
+
 export ETCD_PORT=${ETCD_PORT:-4001}
-export HOST_IP=${HOST_IP:-172.17.42.1}
-export ETCD=$HOST_IP:4001
+export HOST_IP=${PRIVATE_IPV4:-172.17.42.1}
+export ETCD=$HOST_IP:$ETCD_PORT
 
 echo "[nginx] booting container. ETCD: $ETCD"
 
 # Loop until confd has updated the nginx config
-until confd -onetime -node $ETCD -config-file /etc/confd/conf.d/nginx.toml; do
+until confd -verbose -onetime -node $ETCD -config-file /etc/confd/conf.d/nginx.toml; do
   echo "[nginx] waiting for confd to refresh nginx.conf"
   sleep 5
 done

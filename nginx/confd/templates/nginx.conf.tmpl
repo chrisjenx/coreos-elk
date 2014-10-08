@@ -1,17 +1,12 @@
-upstream app {
-  {{ range $server := .app_server }}
-  server {{ $server.Value }};
+upstream elasticsearch {
+  {{ range $server := .services_elasticsearch }}
+  server {{ $server.Value }}:9200;
   {{ end }}
 }
 
 server {
-  server_name _;
-
+  listen 80;
   location / {
-    proxy_pass http://app;
-    proxy_redirect off;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_pass http://elasticsearch;
   }
 }
