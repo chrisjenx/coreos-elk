@@ -18,7 +18,7 @@ defaults
   errorfile 504 /etc/haproxy/errors/504.http
 
 
-listen elasticsearch 0.0.0.0:9199
+listen elasticsearch *:9199
   mode http
   stats enable
   stats uri /haproxy?stats
