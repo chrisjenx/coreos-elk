@@ -10,10 +10,10 @@ FROM dockerfile/java:oracle-java7
 MAINTAINER Christopher Jenkins <chris.mark.jenkins@gmail.com>
 
 # Vars
-ENV CONFD_VERSION 0.5.0
+ENV CONFD_VERSION 0.6.3
 # These should be set when running the container
-ENV PRIVATE_IPV4 localhost
-ENV PUBLIC_IPV4 localhost
+ENV PRIVATE_IPV4 0.0.0.0
+ENV PUBLIC_IPV4 0.0.0.0
 
 # Install confd
 RUN curl -L https://github.com/kelseyhightower/confd/releases/download/v$CONFD_VERSION/confd-$CONFD_VERSION-linux-amd64 -o /usr/local/bin/confd \
@@ -49,8 +49,6 @@ WORKDIR /data
 # Expose ports before starting to alow unicast to find other hosts
 #   - 9200: HTTP
 #   - 9300: transport
-EXPOSE 9200
-EXPOSE 9300
 
 # Start Elasticsearch
 RUN chmod +x /boot.sh

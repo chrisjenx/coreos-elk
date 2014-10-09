@@ -14,13 +14,15 @@ ExecStartPre=/usr/bin/docker pull chrisjenx/elasticsearch
 
 ExecStart=/usr/bin/docker run --rm \
   --name %p-%i \
-  -p 9200:9200 \
-  -p 9300:9300 \
+  -p 920%i:920%i \
+  -p 930%i:930%i \
   --volume /data/elasticsearch:/data \
   -e PUBLIC_IPV4=${COREOS_PUBLIC_IPV4} \
   -e PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} \
+  -e HTTP_PORT=920%i \
+  -e TRANSPORT_PORT=930%i \
   chrisjenx/elasticsearch
-ExecStartPost=/usr/bin/etcdctl set /services/elasticsearch/%p-%i ${COREOS_PRIVATE_IPV4}
+ExecStartPost=/usr/bin/etcdctl set /services/elasticsearch/%p-%i '{"IP": "${COREOS_PRIVATE_IPV4}", "HttpPort": 920%i, "TransportPort": 930%i }'
 ExecStop=-/usr/bin/docker kill %p-%i
 ExecStopPost=/usr/bin/etcdctl rm /services/elasticsearch/%p-%i
 

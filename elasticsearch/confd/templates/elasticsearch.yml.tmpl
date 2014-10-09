@@ -41,21 +41,20 @@ path.logs: /data/log
 # set, it is automatically derived. It must point to an actual IP address.
 network.publish_host: ${PRIVATE_IPV4}
 
-transport.tcp.port: 9300
-http.port: 9200
+transport.tcp.port: ${TRANSPORT_PORT}
+http.port: ${HTTP_PORT}
 
 ################################## Discovery ##################################
 
 # Default is 3, set slightly higher incase one instance is under heavy load
-discovery.zen.ping.timeout: 5s
+discovery.zen.ping.timeout: 10s
 
 # See <http://elasticsearch.org/guide/en/elasticsearch/reference/current/modules-discovery-zen.html>
 # We can't use multicast inside docker, as the containers are bridged.
 discovery.zen.ping.multicast.enabled: false
 
-# This this changes as we add/remove boxes onto the cluster. The intial box will
-# be empty at this stage but that is fine. It becomes the master by default.
-# Once one box talks to another they negotiate based on the cluster settings.
+# The first node becomes the master then once the others find another they
+# negotiate responsibilites.
+# e.g. ["ip:transport_port","etc:etc"]
 #
-#discovery.zen.ping.unicast.hosts: ["host1", "host2:port"]
-discovery.zen.ping.unicast.hosts: [{{range $i, $server := .services_elasticsearch }}{{if $i}}, {{end}}"{{ $server.Value }}"{{end}}]
+discovery.zen.ping.unicast.hosts: [{{range gets "/services/elasticsearch/*"}}{{$data := json .Value}}"{{$data.IP}}:{{$data.TransportPort}}",{{end}}]

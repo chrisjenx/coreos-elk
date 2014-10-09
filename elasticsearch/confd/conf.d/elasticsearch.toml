@@ -1,6 +1,6 @@
 [template]
 keys        = [
-  "services/elasticsearch"
+  "/services/elasticsearch/"
 ]
 owner       = "elasticsearch"
 mode        = "0644"
