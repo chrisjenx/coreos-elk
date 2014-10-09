@@ -1,11 +1,11 @@
 upstream elasticsearch {
-  {{ range $server := .services_elasticsearch }}
-  server {{ $server.Value }}:9200;
-  {{ end }}
+  {{range gets "/services/elasticsearch/*"}}
+  server {{$data := json .Value}}{{$data.IP}}:{{$data.HttpPort}};
+  {{end}}
 }
 
 server {
-  listen 80;
+  listen 9200;
   location / {
       proxy_pass http://elasticsearch;
   }

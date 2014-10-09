@@ -1,7 +1,13 @@
 [Unit]
 Description=elasticsearch
-After=docker.service
+
+# Requirements
+Requires=etcd.service
 Requires=docker.service
+
+# Dependency ordering
+After=etcd.service
+After=docker.service
 
 [Service]
 TimeoutSec=0

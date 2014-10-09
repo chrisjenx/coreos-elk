@@ -1,6 +1,6 @@
 [template]
 keys        = [
-  "services/elasticsearch"
+  "/services/elasticsearch/"
 ]
 owner       = "nginx"
 mode        = "0644"

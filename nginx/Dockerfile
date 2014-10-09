@@ -17,7 +17,7 @@ RUN \
   chown -R www-data:www-data /var/lib/nginx
 
 # Install confd
-ENV CONFD_VERSION 0.5.0
+ENV CONFD_VERSION 0.6.3
 RUN curl -L https://github.com/kelseyhightower/confd/releases/download/v$CONFD_VERSION/confd-$CONFD_VERSION-linux-amd64 -o /usr/local/bin/confd \
   && chmod 0755 /usr/local/bin/confd
 
