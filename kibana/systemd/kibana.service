@@ -1,0 +1,31 @@
+[Unit]
+Description=nginx
+
+# Requirements
+Requires=etcd.service
+Requires=docker.service
+
+# Dependency ordering
+After=etcd.service
+After=docker.service
+
+[Service]
+TimeoutSec=0
+
+EnvironmentFile=/etc/environment
+
+ExecStartPre=-/usr/bin/docker kill kibana
+ExecStartPre=-/usr/bin/docker rm kibana
+ExecStartPre=/usr/bin/docker pull chrisjenx/kibana
+ExecStart=/usr/bin/docker run --rm \
+  --name kibana \
+  -e PUBLIC_IPV4=${COREOS_PUBLIC_IPV4} \
+  -e PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} \
+  chrisjenx/kibana
+
+ExecStartPost=/usr/bin/etcdctl set /services/kibana/host '{"IP": "${COREOS_PUBLIC_IPV4}", "HttpPort": 9100 }'
+ExecStop=-/usr/bin/docker stop kibana
+ExecStopPost=/usr/bin/etcdctl rm /services/kibana/host
+
+[X-Fleet]
+X-Conflicts=kibana.service
