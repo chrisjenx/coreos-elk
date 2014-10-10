@@ -1,28 +1,44 @@
 global
+  log 127.0.0.1 local0
+  log 127.0.0.1 local1 notice
   chroot /var/lib/haproxy
   user haproxy
   group haproxy
+  # daemon
 
 defaults
+  log global
   mode http
-  timeout connect 20s
-  timeout client 1m
-  timeout server 2m
-  timeout tunnel 5m
-  timeout client-fin 30s
+  option httplog
+  option dontlognull
+  timeout connect 5000
+  timeout client 50000
+  timeout server 50000
+  errorfile 400 /etc/haproxy/errors/400.http
+  errorfile 403 /etc/haproxy/errors/403.http
+  errorfile 408 /etc/haproxy/errors/408.http
+  errorfile 500 /etc/haproxy/errors/500.http
+  errorfile 502 /etc/haproxy/errors/502.http
+  errorfile 503 /etc/haproxy/errors/503.http
+  errorfile 504 /etc/haproxy/errors/504.http
 
-listen stats
-  bind *:8080
+listen stats :8080
   stats enable
-  stats admin if TRUE
   stats uri /haproxy-stats
 
-listen elasticsearch
-  bind *:9199
+listen elasticsearch-HTTP-9200 :9200
   mode http
   balance roundrobin
-  option httpclose
-  option forwardfor
-  {{range $server := .services_elasticsearch}}
-  server {{Base $server.Key}} {{$server.Value}}:9200 check
+#  server elasticsearch-1 172.17.8.102:9201 check
+  {{range gets "/services/elasticsearch/*"}}{{$data := json .Value}}
+  server {{base .Key}} {{$data.IP}}:{{$data.HttpPort}} check
+  {{end}}
+
+listen elasticsearch-TCP-9300 :9300
+  mode    tcp
+  option  tcplog
+  balance roundrobin
+#  server elasticsearch-1 172.17.8.102:9301 check
+  {{range gets "/services/elasticsearch/*"}}{{$data := json .Value}}
+  server {{base .Key}} {{$data.IP}}:{{$data.TransportPort}} check
   {{end}}

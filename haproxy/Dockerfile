@@ -1,45 +1,49 @@
 #
 # Haproxy Dockerfile
 #
-# https://github.com/dockerfile/haproxy
+# https://github.com/core-elk/haproxy
 #
-FROM ubuntu:trusty
+# Pull base image.
+FROM dockerfile/ubuntu
 MAINTAINER Chris Jenkins <chris.mark.jenkins@gmail.com>
 
-
 # Env - These should be set when running the container
-ENV DEBIAN_FRONTEND noninteractive
 ENV PRIVATE_IPV4 0.0.0.0
 ENV PUBLIC_IPV4 0.0.0.0
-ENV CONFD_VERSION 0.5.0
-
-# Install Haproxy.
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 505d97a41c61b9cd
-RUN echo "deb http://ppa.launchpad.net/vbernat/haproxy-1.5/ubuntu trusty main" > /etc/apt/sources.list.d/haproxy.list
-RUN apt-get update -q
-RUN apt-get install -y -q haproxy curl
 
 # Install confd
-RUN curl -L https://github.com/kelseyhightower/confd/releases/download/v$CONFD_VERSION/confd-$CONFD_VERSION-linux-amd64 -o /usr/local/bin/confd \
-  && chmod 0755 /usr/local/bin/confd
+ENV CONFD_VERSION 0.6.3
+RUN \
+  curl -L https://github.com/kelseyhightower/confd/releases/download/v$CONFD_VERSION/confd-$CONFD_VERSION-linux-amd64 -o /usr/local/bin/confd && \
+  chmod 0755 /usr/local/bin/confd
+
+# Install Haproxy.
+RUN \
+  sed -i 's/^# \(.*-backports\s\)/\1/g' /etc/apt/sources.list && \
+  apt-get update && \
+  apt-get install -y haproxy=1.5.3-1~ubuntu14.04.1 && \
+  sed -i 's/^ENABLED=.*/ENABLED=1/' /etc/default/haproxy && \
+  rm -rf /var/lib/apt/lists/*
 
 # Add files
+# ADD haproxy.cfg       /etc/haproxy/haproxy.cfg
 ADD ./confd           /etc/confd
-ADD ./bin/boot.sh     /usr/local/bin/start_haproxy
+ADD ./bin/boot.sh     /haproxy-start
 
 # Allow confd to be exec
-RUN chmod +x /usr/local/bin/confd
-RUN chmod +x /usr/local/bin/start_haproxy
+#RUN chmod +x /usr/local/bin/start_haproxy
 
-# Expose ports.
-EXPOSE 80
+# Define working directory.
+WORKDIR /etc/haproxy
+
+# Define default command.
+CMD ["bash", "/haproxy-start"]
+
+# Expose ports
+# - Status
 EXPOSE 8080
-EXPOSE 443
 #Logstash
 # - http
 # - transport
-EXPOSE 9199
-# EXPOSE 9200
-# EXPOSE 9300
-
-CMD start_haproxy
+EXPOSE 9200
+EXPOSE 9300

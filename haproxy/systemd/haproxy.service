@@ -1,7 +1,13 @@
 [Unit]
-Description=haproxy for elasticsearch
-After=docker.service
+Description=haproxy for cluster services
+
+# Requirements
+Requires=etcd.service
 Requires=docker.service
+
+# Dependency ordering
+After=etcd.service
+After=docker.service
 
 [Service]
 TimeoutSec=0
@@ -14,10 +20,14 @@ ExecStartPre=/usr/bin/docker pull chrisjenx/haproxy
 
 ExecStart=/usr/bin/docker run --rm \
   --name haproxy \
+  -p 8080:8080 \
+  -p 9200:9200 \
+  -p 9300:9300 \
   -e PUBLIC_IPV4=${COREOS_PUBLIC_IPV4} \
   -e PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} \
   chrisjenx/haproxy
-ExecStop=-/usr/bin/docker kill haproxy
+
+ExecStop=-/usr/bin/docker stop haproxy
 
 [X-Fleet]
-#Global=true
+Global=true
