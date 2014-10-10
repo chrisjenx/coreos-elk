@@ -37,8 +37,6 @@ ADD ./bin/boot.sh             /boot.sh
 # Kibana config points a 9100 (this box)
 ADD ./config/kibana-config.js /usr/share/kibana-3.1.1/config.js
 
-
-
 # Expose port.
 EXPOSE 9100
 

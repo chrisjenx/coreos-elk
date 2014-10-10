@@ -19,6 +19,7 @@ ExecStartPre=-/usr/bin/docker rm kibana
 ExecStartPre=/usr/bin/docker pull chrisjenx/kibana
 ExecStart=/usr/bin/docker run --rm \
   --name kibana \
+  -p 9100:9100 \
   -e PUBLIC_IPV4=${COREOS_PUBLIC_IPV4} \
   -e PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} \
   chrisjenx/kibana
