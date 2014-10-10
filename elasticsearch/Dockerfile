@@ -9,13 +9,12 @@ FROM dockerfile/java:oracle-java7
 
 MAINTAINER Christopher Jenkins <chris.mark.jenkins@gmail.com>
 
-# Vars
-ENV CONFD_VERSION 0.6.3
 # These should be set when running the container
 ENV PRIVATE_IPV4 0.0.0.0
 ENV PUBLIC_IPV4 0.0.0.0
 
 # Install confd
+ENV CONFD_VERSION 0.6.3
 RUN curl -L https://github.com/kelseyhightower/confd/releases/download/v$CONFD_VERSION/confd-$CONFD_VERSION-linux-amd64 -o /usr/local/bin/confd \
   && chmod 0755 /usr/local/bin/confd
 
@@ -34,7 +33,6 @@ RUN \
 
 # Install plugins
 RUN /opt/elasticsearch/bin/plugin -install lmenezes/elasticsearch-kopf
-RUN /opt/elasticsearch/bin/plugin -url http://download.elasticsearch.org/kibana/kibana/kibana-latest.zip -install elasticsearch/kibana3
 
 # Define mountable directories.
 VOLUME ["/data"]
@@ -47,8 +45,9 @@ ADD ./bin/boot.sh             /boot.sh
 WORKDIR /data
 
 # Expose ports before starting to alow unicast to find other hosts
-#   - 9200: HTTP
-#   - 9300: transport
+# Ports are set by the systemd unit.
+#   - 920%i: HTTP
+#   - 930%i: transport
 
 # Start Elasticsearch
 RUN chmod +x /boot.sh

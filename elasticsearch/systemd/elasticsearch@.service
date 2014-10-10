@@ -29,7 +29,7 @@ ExecStart=/usr/bin/docker run --rm \
   -e TRANSPORT_PORT=930%i \
   chrisjenx/elasticsearch
 ExecStartPost=/usr/bin/etcdctl set /services/elasticsearch/%p-%i '{"IP": "${COREOS_PRIVATE_IPV4}", "HttpPort": 920%i, "TransportPort": 930%i }'
-ExecStop=-/usr/bin/docker kill %p-%i
+ExecStop=-/usr/bin/docker stop %p-%i
 ExecStopPost=/usr/bin/etcdctl rm /services/elasticsearch/%p-%i
 
 [X-Fleet]

@@ -12,6 +12,8 @@ After=docker.service
 [Service]
 TimeoutSec=0
 EnvironmentFile=/etc/environment
+
+ExecStartPre=-/usr/bin/docker kill nginx
 ExecStartPre=-/usr/bin/docker rm nginx
 ExecStartPre=/usr/bin/docker pull chrisjenx/nginx
 ExecStart=/usr/bin/docker run --rm \
@@ -22,7 +24,7 @@ ExecStart=/usr/bin/docker run --rm \
   -e PUBLIC_IPV4=${COREOS_PUBLIC_IPV4} \
   -e PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} \
   chrisjenx/nginx
-ExecStop=-/usr/bin/docker kill nginx
+ExecStop=-/usr/bin/docker stop nginx
 
 [X-Fleet]
 Global=true

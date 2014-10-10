@@ -6,7 +6,6 @@ ENV PRIVATE_IPV4 0.0.0.0
 ENV PUBLIC_IPV4 0.0.0.0
 
 
-# Install Nginx
 # Install Nginx.
 RUN \
   add-apt-repository -y ppa:nginx/stable && \
@@ -32,11 +31,10 @@ ADD ./bin/boot.sh /boot.sh
 RUN chmod +x /boot.sh
 
 # Expose ports.
-EXPOSE 80
-EXPOSE 8080
-EXPOSE 443
+#   - Elasticsearch http
+#
+#
 EXPOSE 9200
-EXPOSE 9300
 
 # Run the boot script
 CMD /boot.sh

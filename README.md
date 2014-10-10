@@ -29,7 +29,7 @@ convention:
 ```bash
 /services/{{service_name}}/{{service_name}}-{{instance}} 'SomeValue'
 # E.g.
-/services/elasticsearch/elasticsearch-0 {"host":"172.16.1.102","http_port":9200,"transport_port":9200}
+/services/elasticsearch/elasticsearch-0 '{"IP":"172.16.1.102","HttpPort":9201,"TransportPort":9301}'
 ```
 
 # Elasticsearch
@@ -40,17 +40,44 @@ Each time a new unit is added to the cluster it will add the previous nodes to
 the unicast hosts.
 See [elasticsearch.yml](./elasticsearch/confd/templates/elasticserach.yml).
 
-N.B. You can't start more instances than their are boxes in the cluster.
+TODO:
+ - [ ] Build a discovery service that will only broadcast the Elasticsearch box once its "avaliable"
+ - [ ] Define meta data so that they only run on specified boxes so they will pick up there exisiting data stores.
 
-Building elasticsearch docker image and starting it in fleet:
+**Building elasticsearch docker image and starting it in fleet:**
 ```bash
 # Build task
 docker build -t chrisjenx/elasticsearch ./elasticsearch/
-docker push chrisjenx/elasticsearch
+docker push [name]/elasticsearch
 # Run on the cluster
 fleetctl start ./elasticsearch/systemd/elasticsearch@{0,1}.service
 ```
 The simple regex "{0,1}" defines the instances to start.
+
+# Kibana
+
+Kibana and elastic search are seperated, there was no need for these to be on the
+same box. (Seperation of concerns etc).
+
+This container is Kibana + Nginx. Kibana talks to Elasticsearch directly, the nginx server
+on this container provides a reverse proxy and a host for kibana.
+
+`http://kibana-host:9100` will serve the pages then the ajax requests are reverse
+proxied to the Elasticsearch cluster. (There could be 1-n boxes etc).
+
+This also means as Elasticsearch box is added/removed the reverse proxy is reconfigured
+so kibana will never know the difference.
+
+**Building Kibana docker image and starting it in fleet:**
+```bash
+# Build task
+docker build -t [name]/kibana ./kibana/
+docker push [name]/kibana
+# Run on the cluster
+fleetctl start ./kibana/systemd/kibana.service
+```
+
+
 
 # HAProxy
 
