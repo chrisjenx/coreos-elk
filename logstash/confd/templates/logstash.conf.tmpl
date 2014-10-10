@@ -1,21 +1,22 @@
 input {
-  tcp {
-    port => 10102
-    type => "mobile"
-  }
   lumberjack {
-    port => 10101
+    port => 5000
+    type => "logs"
     ssl_certificate => "/opt/logstash/ssl/logstash-forwarder.crt"
     ssl_key => "/opt/logstash/ssl/logstash-forwarder.key"
+  }
+  tcp {
+    port => 5001
+    type => "tcp"
   }
 }
 
 output {
   elasticsearch {
     cluster => "logstash"
-    host => "0.0.0.0"
+    host => "{{ $data := json (getv "/services/logstash/host")}}{{$data.IP}}"
     protocol => "http"
-    port => 9199
+    port => 9200
   }
   stdout { codec => json }
 }

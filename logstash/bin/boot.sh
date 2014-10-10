@@ -3,15 +3,17 @@
 # Fail hard and fast
 set -eo pipefail
 
+export PUBLIC_IPV4=${PUBLIC_IPV4}
+export PRIVATE_IPV4=${PRIVATE_IPV4}
+
 export ETCD_PORT=${ETCD_PORT:-4001}
-export HOST_IP=${HOST_IP:-172.17.42.1}
-export ETCD=$HOST_IP:$ETCD_PORT
+export ETCD=$PUBLIC_IPV4:$ETCD_PORT
 
 echo "[logstash] booting container. ETCD: $ETCD"
 
 # Loop until confd has updated the logstash config
 until confd -verbose -onetime -node $ETCD -config-file /etc/confd/conf.d/logstash.toml; do
-  echo "[logstash] waiting for confd to refresh logstash.conf (waiting for ElasticSearch to be available)"
+  echo "[logstash] waiting for confd to refresh logstash.conf (waiting for ElasticSearch/HAProxy to be available)"
   sleep 5
 done
 
