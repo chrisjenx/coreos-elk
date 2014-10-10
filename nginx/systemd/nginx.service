@@ -17,6 +17,7 @@ ExecStartPre=/usr/bin/docker pull chrisjenx/nginx
 ExecStart=/usr/bin/docker run --rm \
   --name nginx \
   -p 80:80 \
+  -p 8080:8080 \
   -p 9200:9200 \
   -e PUBLIC_IPV4=${COREOS_PUBLIC_IPV4} \
   -e PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} \

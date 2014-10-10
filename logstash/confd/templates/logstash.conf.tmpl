@@ -7,7 +7,7 @@ input {
   }
   tcp {
     port => 5001
-    type => "tcp"
+    type => "logs"
   }
 }
 
@@ -18,5 +18,4 @@ output {
     protocol => "http"
     port => 9200
   }
-  stdout { codec => json }
 }
