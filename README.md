@@ -44,7 +44,7 @@ TODO:
  - [ ] Build a discovery service that will only broadcast the Elasticsearch box once its "avaliable"
  - [ ] Define meta data so that they only run on specified boxes so they will pick up there exisiting data stores.
 
-**Building elasticsearch docker image and starting it in fleet:**
+**Building Elasticsearch docker image and starting it in fleet:**
 ```bash
 # Build task
 docker build -t chrisjenx/elasticsearch ./elasticsearch/
@@ -54,6 +54,8 @@ fleetctl start ./elasticsearch/systemd/elasticsearch@{0,1}.service
 ```
 The simple regex "{0,1}" defines the instances to start.
 
+You can check the Elastic cluster status hitting the follow end-point: [http://[cluster-ip]:9200/_plugin/kopf/](http://[cluster-host]:9200/_plugin/kopf/)
+
 # Kibana
 
 Kibana and elastic search are seperated, there was no need for these to be on the
@@ -62,10 +64,10 @@ same box. (Seperation of concerns etc).
 This container is Kibana + Nginx. Kibana talks to Elasticsearch directly, the nginx server
 on this container provides a reverse proxy and a host for kibana.
 
-`http://kibana-host:9100` will serve the pages then the ajax requests are reverse
-proxied to the Elasticsearch cluster. (There could be 1-n boxes etc).
+[http://[kibana-host]:9100](http://[kibana-host]:9100) will serve the pages then
+the ajax requests are reverse proxied to the Elasticsearch cluster.
 
-This also means as Elasticsearch box is added/removed the reverse proxy is reconfigured
+This also means as Elasticsearch boxes are added/removed the reverse proxy is reconfigured
 so kibana will never know the difference.
 
 **Building Kibana docker image and starting it in fleet:**
